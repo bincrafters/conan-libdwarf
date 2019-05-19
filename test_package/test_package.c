@@ -26,6 +26,7 @@ void example1(Dwarf_Die somedie) {
 }
 int main(void){
     Dwarf_Die somedie;
+    memset(&somedie, 0, sizeof(somedie));
     example1(somedie);
     return EXIT_SUCCESS;
 }
