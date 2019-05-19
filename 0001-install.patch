@@ -16,14 +16,16 @@ index ee08072..3aacddf 100644
  message(STATUS "Install prefix ... ${CMAKE_INSTALL_PREFIX}" )
 -add_custom_target(dd DEPENDS ${DWARF_TARGETS} dwarfdump)
 diff --git a/libdwarf/CMakeLists.txt b/libdwarf/CMakeLists.txt
-index 9457b6d..a93ce05 100644
+index 9457b6d..120f29d 100644
 --- a/libdwarf/CMakeLists.txt
 +++ b/libdwarf/CMakeLists.txt
-@@ -81,23 +81,18 @@ foreach(i RANGE ${targetCount})
+@@ -80,24 +80,17 @@ foreach(i RANGE ${targetCount})
+             ${LIBELF_INCLUDE_DIRS})
  	msvc_posix(${target})
  
- 	target_link_libraries(${target} PUBLIC ${LIBELF_LIBRARIES})
+-	target_link_libraries(${target} PUBLIC ${LIBELF_LIBRARIES})
 -	
++	target_link_libraries(${target} PUBLIC ${LIBELF_LIBRARIES} z)
  	set_target_properties(${target} PROPERTIES OUTPUT_NAME dwarf)
  
 -	set(SUFFIX $<$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>:64>)
@@ -43,8 +45,6 @@ index 9457b6d..a93ce05 100644
 -	target_link_libraries(dwarf-shared PUBLIC z)
 -endif()
 -		
-+target_link_libraries(dwarf-shared PUBLIC z)
-+
 +install(FILES ${CMAKE_BINARY_DIR}/source_subfolder/libdwarf/libdwarf.h DESTINATION include)
 +install(FILES dwarf.h DESTINATION include)
  
