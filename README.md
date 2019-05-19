@@ -1,8 +1,9 @@
 ## Package Status
 
-| Bintray | Linux & macOS |
-|:--------:|:-----------------:|
-|[![Download](https://api.bintray.com/packages/bincrafters/public-conan/libdwarf%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/libdwarf%3Abincrafters/_latestVersion)|[![Build Status](https://travis-ci.com/bincrafters/conan-libdwarf.svg)](https://travis-ci.com/bincrafters/conan-libdwarf)|
+| Bintray | Windows | Linux & macOS |
+|:--------:|:---------:|:-----------------:|
+|[![Download](https://api.bintray.com/packages/bincrafters/public-conan/libdwarf%3Abincrafters/images/download.svg)](https://bintray.com/bincrafters/public-conan/libdwarf%3Abincrafters/_latestVersion)|[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-libdwarf?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-libdwarf)|[![Build Status](https://travis-ci.com/bincrafters/conan-libdwarf.svg?)](https://travis-ci.com/bincrafters/conan-libdwarf)|
+
 
 ## Conan Information
 
