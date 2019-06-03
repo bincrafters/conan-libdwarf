@@ -36,6 +36,7 @@ class LibdwarfConan(ConanFile):
         del self.settings.compiler.libcxx
 
     def source(self):
+        # INFO (uilian): SourceForge doesn't allow permanent link for code snapshot
         source_url = "https://dl.bintray.com/bincrafters/public-sources"
         commit = "c6660d75c2affc3e2f1231ad55942734060d98e6"
         sha256 = "7f0bc94c82bb3130f4a3d20e14ccb45656ad54d412c8b2edfc3d33981803a72d"
