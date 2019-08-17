@@ -1,37 +1,105 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ee08072..3aacddf 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -37,7 +37,6 @@ if(shared)
+diff --git a/configure.cmake b/configure.cmake
+index fb695ba..24621a5 100644
+--- a/configure.cmake
++++ b/configure.cmake
+@@ -30,9 +30,12 @@ check_include_file( "unistd.h"        HAVE_UNISTD_H   )
+ check_include_file( "sgidefs.h"       HAVE_SGIDEFS_H  )
+ check_include_file( "stdafx.h"        HAVE_STDAFX_H   )
+ check_include_file( "Windows.h"       HAVE_WINDOWS_H  )
+-check_include_file( "elf.h"           HAVE_ELF_H      ) 
+-check_include_file( "libelf.h"        HAVE_LIBELF_H   ) 
+-check_include_file( "libelf/libelf.h" HAVE_LIBELF_LIBELF_H) 
++#check_include_file( "elf.h"           HAVE_ELF_H      )
++#check_include_file( "libelf.h"        HAVE_LIBELF_H   ) 
++#check_include_file( "libelf/libelf.h" HAVE_LIBELF_LIBELF_H) 
++set(HAVE_ELF_H FALSE)
++set(HAVE_LIBELF_H TRUE)
++set(HAVE_LIBELF_LIBELF_H FALSE)
+ check_include_file( "alloca.h"        HAVE_ALLOCA_H   )
+ check_include_file( "elfaccess.h"     HAVE_ELFACCESS_H)
+ check_include_file( "sys/elf_386.h"   HAVE_ELF_386_H  )
+@@ -53,16 +56,18 @@ elseif(HAVE_LIBELF_LIBELF_H)
  endif()
  
- add_subdirectory(libdwarf)
--add_subdirectory(dwarfdump)
- if ( BUILD_DWARFGEN )
- 	if ( DWARF_WITH_LIBELF )
- 	    add_subdirectory(dwarfgen)
-@@ -50,4 +49,3 @@ if ( BUILD_DWARFEXAMPLE )
+ if(HAVE_LIBELF_H)
+-    set(JUST_LIBELF "<libelf.h>")
++    set(JUST_LIBELF libelf.h)
+ elseif(HAVE_LIBELF_LIBELF_H)
+-    set(JUST_LIBELF "<libelf/libelf.h>")
++    set(JUST_LIBELF libelf/libelf.h)
  endif()
  
- message(STATUS "Install prefix ... ${CMAKE_INSTALL_PREFIX}" )
--add_custom_target(dd DEPENDS ${DWARF_TARGETS} dwarfdump)
+ if (HAVE_LIBELF_H OR HAVE_LIBELF_LIBELF_H)
+-  set (CMAKE_REQUIRED_LIBRARIES elf)
++  set (CMAKE_REQUIRED_LIBRARIES CONAN_PKG::libelf)
++  set (CMAKE_REQUIRED_DEFINITIONS -D__LIBELF64=1)
+   check_symbol_exists( elf64_getehdr ${JUST_LIBELF} HAVE_ELF64_GETEHDR)
+   check_symbol_exists( elf64_getshdr ${JUST_LIBELF} HAVE_ELF64_GETSHDR)
+   set (CMAKE_REQUIRED_LIBRARIES)
++  set (CMAKE_REQUIRED_DEFINITIONS)
+ endif()
+ 
+ option(libelf "Use libelf (default is YES)" TRUE)
+@@ -78,6 +83,10 @@ if (DWARF_WITH_LIBELF)
+   message(STATUS "checking using HAVE_ELF_H ... ${HAVE_ELF_H}")
+   message(STATUS "checking using elf header ... ${HAVE_LOCATION_OF_LIBELFHEADER}")
+   message(STATUS "checking using libelf header ... ${JUST_LIBELF}")
++
++  set (CMAKE_REQUIRED_LIBRARIES CONAN_PKG::libelf)
++  set (CMAKE_REQUIRED_DEFINITIONS -D__LIBELF64=1)
++
+   check_c_source_compiles("
+   #include ${HAVE_LOCATION_OF_LIBELFHEADER}
+   int main()      
+@@ -114,7 +123,7 @@ if (DWARF_WITH_LIBELF)
+   # to set HAVE_LIBELF_OFF64_OK at present. 
+   check_c_source_compiles("
+   #define _GNU_SOURCE 1
+-  #include ${JUST_LIBELF}
++  #include <${JUST_LIBELF}>
+   int main()
+   { 
+       off64_t  p; p = 0;
+@@ -122,7 +131,7 @@ if (DWARF_WITH_LIBELF)
+   }"  HAVE_LIBELF_OFF64_OK)
+ 
+   check_c_source_compiles("
+-  #include ${JUST_LIBELF}
++  #include <${JUST_LIBELF}>
+   /* This must be at global scope */
+   struct _Elf;
+   typedef struct _Elf Elf;
+@@ -132,6 +141,10 @@ if (DWARF_WITH_LIBELF)
+    int i = 12;
+    return 0;
+   }" HAVE_STRUCT_UNDERSCORE_ELF)
++
++  set (CMAKE_REQUIRED_LIBRARIES)
++  set (CMAKE_REQUIRED_DEFINITIONS)
++
+ endif()
+ message(STATUS "Assuming struct Elf for the default libdwarf.h")
+ # Because cmake treats ; in an interesting way attempting
 diff --git a/libdwarf/CMakeLists.txt b/libdwarf/CMakeLists.txt
-index 9457b6d..750dfba 100644
+index 9457b6d..268e015 100644
 --- a/libdwarf/CMakeLists.txt
 +++ b/libdwarf/CMakeLists.txt
-@@ -80,24 +80,18 @@ foreach(i RANGE ${targetCount})
-             ${LIBELF_INCLUDE_DIRS})
+@@ -76,11 +76,9 @@ foreach(i RANGE ${targetCount})
+             ${GENNAMES_OUTPUT} ${CONFIGURATION_FILES})
+ 
+ 	set_folder(${target} libdwarf)
+-	target_include_directories(${target} PUBLIC 
+-            ${LIBELF_INCLUDE_DIRS})
  	msvc_posix(${target})
  
 -	target_link_libraries(${target} PUBLIC ${LIBELF_LIBRARIES})
-+	target_link_libraries(${target} PUBLIC ${CONAN_LIBS})
++	target_link_libraries(${target} PUBLIC CONAN_PKG::libelf)
  	
  	set_target_properties(${target} PROPERTIES OUTPUT_NAME dwarf)
  
--	set(SUFFIX $<$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>:64>)
--	set(LIBDIR lib${SUFFIX})
--	set(BINDIR bin${SUFFIX})
--
+@@ -89,15 +87,13 @@ foreach(i RANGE ${targetCount})
+ 	set(BINDIR bin${SUFFIX})
+ 
  	install(TARGETS ${target}
 -		RUNTIME DESTINATION ${BINDIR}		
 -		LIBRARY DESTINATION ${LIBDIR}
