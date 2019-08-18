@@ -93,7 +93,7 @@ index 9457b6d..268e015 100644
  	msvc_posix(${target})
  
 -	target_link_libraries(${target} PUBLIC ${LIBELF_LIBRARIES})
-+	target_link_libraries(${target} PUBLIC CONAN_PKG::libelf)
++	conan_target_link_libraries(${target})
  	
  	set_target_properties(${target} PROPERTIES OUTPUT_NAME dwarf)
  
