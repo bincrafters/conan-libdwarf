@@ -3,7 +3,7 @@ project(conan_wrapper)
 
 message(STATUS "Conan CMake Wrapper")
 include(conanbuildinfo.cmake)
-conan_basic_setup()
+conan_basic_setup(TARGETS)
 
 if (WIN32 AND BUILD_SHARED_LIBS)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
