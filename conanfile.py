@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from conans import ConanFile, CMake, tools
 import os
 
@@ -18,7 +17,7 @@ class LibdwarfConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
-    requires = ("libelf/0.8.13@bincrafters/stable", "zlib/1.2.11@conan/stable")
+    requires = ("libelf/0.8.13", "zlib/1.2.11")
 
     @property
     def _source_subfolder(self):
@@ -34,6 +33,7 @@ class LibdwarfConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
 
     def source(self):
         # INFO (uilian): SourceForge doesn't allow permanent link for code snapshot
