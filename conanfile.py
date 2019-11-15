@@ -9,7 +9,6 @@ class LibdwarfConan(ConanFile):
     topics = ("conan", "libdwarf", "dwarf2", "debugging", "dwarf")
     url = "https://github.com/bincrafters/conan-libdwarf"
     homepage = "https://www.prevanders.net/dwarf.html"
-    author = "Bincrafters <bincrafters@gmail.com>"
     license = "LGPL-2.1"
     exports = ["LICENSE.md"]
     exports_sources = ["CMakeLists.txt", "0001-install.patch"]
